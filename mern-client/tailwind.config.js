@@ -12,6 +12,9 @@ export default {
         'secondary': '#555',
         'primary-bg': '#FCFCFC',
       },
+      fontFamily: {
+        'primary': ['Outfit', 'sans-serif']
+      }
     },
   },
     plugins: [
