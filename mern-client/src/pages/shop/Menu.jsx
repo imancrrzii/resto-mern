@@ -6,6 +6,8 @@ const Menu = () => {
   const [filteredItem, setFilteredItem] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [sortOption, setSortOption] = useState("default");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(6);
 
   // loading data
   useEffect(() => {
@@ -32,12 +34,14 @@ const Menu = () => {
 
     setFilteredItem(filtered);
     setSelectedCategory(category);
+    setCurrentPage(1);
   };
 
   //   show all data func
   const showAll = () => {
     setFilteredItem(menu);
     setSelectedCategory("all");
+    setCurrentPage(1);
   };
 
   //   sorting
@@ -63,7 +67,14 @@ const Menu = () => {
         break;
     }
     setFilteredItem(sortedItems);
+    setCurrentPage(1);
   };
+
+  // pagination
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredItem.slice(indexOfFirstItem, indexOfLastItem);
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
   return (
     <div>
       {/* Menu Banner */}
@@ -157,7 +168,9 @@ const Menu = () => {
           {/* sorting */}
           <div className="flex justify-end mb-4 rounded-sm">
             {/* sorting options */}
-            <select name="sort" id="sort"
+            <select
+              name="sort"
+              id="sort"
               className="select select-bordered w-full max-w-xs"
               onChange={(e) => handleSortChange(e.target.value)}
             >
@@ -173,10 +186,29 @@ const Menu = () => {
         </div>
         {/* products card */}
         <div className="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4">
-          {filteredItem.map((item) => (
+          {currentItems.map((item) => (
             <Card key={item._id} item={item} />
           ))}
         </div>
+      </div>
+
+      {/* pagination */}
+      <div className="flex justify-center my-10">
+        {Array.from({
+          length: Math.ceil(filteredItem.length / itemsPerPage),
+        }).map((_, index) => (
+          <button
+            key={index + 1}
+            onClick={() => paginate(index + 1)}
+            className={`mx-1 px-4 py-2 rounded-full ${
+              currentPage === index + 1
+                ? "bg-violet-600 text-white "
+                : "bg-gray-100"
+            }`}
+          >
+            {index + 1}
+          </button>
+        ))}
       </div>
     </div>
   );
