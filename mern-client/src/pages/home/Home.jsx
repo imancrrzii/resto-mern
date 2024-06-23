@@ -4,6 +4,7 @@ import Categories from './Categories'
 import '../../App.css'
 import SpecialDish from './SpecialDish'
 import Testimonial from './Testimonial'
+import Services from './Services'
 
 const Home = () => {
   return (
@@ -12,6 +13,7 @@ const Home = () => {
       <Categories/>
       <SpecialDish/>
       <Testimonial/>
+      <Services/>
     </div>
   )
 }
