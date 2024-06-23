@@ -29,7 +29,7 @@ const serviceLists = [
 
 const Services = () => {
   return (
-    <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4">
+    <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4 my-16">
       <div className="flex flex-col md:flex-row items-center justify-between gap-12">
         {/* text */}
         <div className="md:w-1/2">
