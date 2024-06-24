@@ -31,12 +31,12 @@ const AuthProvider = ({ children }) => {
   };
 
   // logout
-  const logout = () => {
+  const logOut = () => {
     return signOut(auth);
   };
 
   // update user
-  const updateUser = (name, photoURL) => {
+  const updateUserProfile = (name, photoURL) => {
     return updateProfile(auth.currentUser, {
       displayName: name,
       photoURL: photoURL,
@@ -64,8 +64,8 @@ const AuthProvider = ({ children }) => {
     createUser,
     signUpWithGmail,
     login,
-    logout,
-    updateUser,
+    logOut,
+    updateUserProfile,
     loading,
   };
   return (

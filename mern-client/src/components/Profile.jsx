@@ -1,6 +1,22 @@
-import React from "react";
+import React, { useContext } from "react";
+import { AuthContext } from "../contexts/AuthProvider";
+import { Link, useNavigate } from "react-router-dom";
 
 const Profile = ({ user }) => {
+  const { logOut } = useContext(AuthContext);
+  const navigate = useNavigate(); // Declare useNavigate here
+
+  // logout
+  const handleLogout = () => {
+    logOut()
+      .then(() => {
+        navigate("/"); // Navigate to home after logout
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   return (
     <div>
       <div className="drawer drawer-end z-50">
@@ -13,9 +29,12 @@ const Profile = ({ user }) => {
           >
             <div className="w-10 rounded-full">
               {user.photoURL ? (
-                <img alt="Tailwind CSS Navbar component" src={user.photoURL} />
+                <img alt="" src={user.photoURL} />
               ) : (
-                <img alt="Tailwind CSS Navbar component" src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                <img
+                  alt=""
+                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
+                />
               )}
             </div>
           </label>
@@ -26,19 +45,22 @@ const Profile = ({ user }) => {
             aria-label="close sidebar"
             className="drawer-overlay"
           ></label>
-          <ul className="menu bg-base-200 text-base-content min-h-full w-80 p-4">
+          <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
             {/* Sidebar content here */}
             <li>
-              <a>Profile</a>
+              <a href="/update-profile">Profile</a>
             </li>
             <li>
-              <a>Order</a>
+              <a href="/order">Order</a>
             </li>
             <li>
-              <a>Setting</a>
+              <a>Settings</a>
             </li>
             <li>
-              <a>Logout</a>
+              <Link to="/dashboard">Dashboard</Link>
+            </li>
+            <li>
+              <button onClick={handleLogout}>Logout</button>
             </li>
           </ul>
         </div>
