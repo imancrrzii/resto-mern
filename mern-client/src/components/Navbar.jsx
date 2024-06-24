@@ -1,11 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import logo from "../../public/images/logo.png";
 import { FaRegUser } from "react-icons/fa";
 import Modal from "./Modal";
+import { AuthContext } from "../contexts/AuthProvider";
+import Profile from "./Profile";
 
 const Navbar = () => {
   const [isSticky, setIsSticky] = useState(false);
+
+  const { user } = useContext(AuthContext);
+  console.log(user);
   // handle scroll function
   useEffect(() => {
     const handleScroll = () => {
@@ -65,6 +70,7 @@ const Navbar = () => {
       </li>
     </>
   );
+
   return (
     <header className="max-w-screen-2xl container mx-auto fixed top-0 left-0 right-0 transition-all duration-300 ease-in-out">
       <div
@@ -144,14 +150,18 @@ const Navbar = () => {
             </div>
           </div>
           {/* login btn */}
-          <button
-            onClick={() => document.getElementById("my_modal_5").showModal()}
-            className="btn bg-violet-600 rounded-full px-6 text-white flex items-center gap-2"
-          >
-            <FaRegUser />
-            Login
-          </button>
-          <Modal /> 
+          {user ? (
+            <Profile user={user} />
+          ) : (
+            <button
+              onClick={() => document.getElementById("my_modal_5").showModal()}
+              className="btn bg-violet-600 rounded-full px-6 text-white flex items-center gap-2"
+            >
+              <FaRegUser />
+              Login
+            </button>
+          )}
+          <Modal />
         </div>
       </div>
     </header>
