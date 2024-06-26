@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { AuthContext } from "../contexts/AuthProvider";
 import { useState } from "react";
+import Swal from "sweetalert2";
 
 const Modal = () => {
   const {
@@ -24,18 +25,31 @@ const Modal = () => {
     signUpWithGmail()
       .then((result) => {
         const user = result.user;
-        alert("login success");
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Login successful",
+          showConfirmButton: false,
+          timer: 1500,
+        });
         navigate(from, { replace: true });
       })
       .catch((error) => console.log(error));
   };
+
   const onSubmit = (data) => {
     const email = data.email;
     const password = data.password;
     login(email, password)
       .then((result) => {
         const user = result.user;
-        alert("login success");
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Login successful",
+          showConfirmButton: false,
+          timer: 1500,
+        });
         document.getElementById("my_modal_5").close();
         navigate(from, { replace: true });
       })
@@ -44,6 +58,7 @@ const Modal = () => {
         setErrorMessage("Provide valid email and password");
       });
   };
+
   return (
     <dialog id="my_modal_5" className="modal modal-middle sm:modal-middle">
       <div className="modal-box">

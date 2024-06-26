@@ -11,26 +11,30 @@ const Register = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const location = useLocation();
-  const navigate = useNavigate();
 
-  const from = location.state?.from?.pathname || "/";
+  const {createUser, login} = useContext(AuthContext);
+      // redirecting to home page or specifig page
+const location = useLocation();
+const navigate = useNavigate();
+const from = location.state?.from?.pathname || "/";
 
-  const { createUser, login } = useContext(AuthContext);
   const onSubmit = (data) => {
     const email = data.email;
     const password = data.password;
-    createUser(email, password)
-      .then((result) => {
-        const user = result.user;
-        alert("Account created successfully");
-        document.getElementById("my_modal_5").close();
-        navigate(from, { replace: true });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  };
+    createUser(email, password).then((result) => {
+      // Signed up 
+      const user = result.user;
+      alert("Account creation successfully done!")
+      document.getElementById("my_modal_5").close()
+      navigate(from, {replace: true})
+      // ...
+    })
+    .catch((error) => {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      // ..
+    })
+  }
   return (
     <div className="max-w-md bg-white shadow w-full mx-auto flex items-center justify-center my-20">
       <div className="modal-action flex flex-col justify-center mt-0">

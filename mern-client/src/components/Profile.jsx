@@ -1,22 +1,17 @@
 import React, { useContext } from "react";
 import { AuthContext } from "../contexts/AuthProvider";
-import { Link, useNavigate } from "react-router-dom";
 
 const Profile = ({ user }) => {
   const { logOut } = useContext(AuthContext);
-  const navigate = useNavigate(); // Declare useNavigate here
-
-  // logout
   const handleLogout = () => {
     logOut()
       .then(() => {
-        navigate("/"); // Navigate to home after logout
+        // Sign-out successful.
       })
       .catch((error) => {
-        console.log(error);
+        // An error happened.
       });
   };
-
   return (
     <div>
       <div className="drawer drawer-end z-50">
@@ -29,11 +24,11 @@ const Profile = ({ user }) => {
           >
             <div className="w-10 rounded-full">
               {user.photoURL ? (
-                <img alt="" src={user.photoURL} />
+                <img alt="Tailwind CSS Navbar component" src={user.photoURL} />
               ) : (
                 <img
-                  alt=""
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
+                  alt="Tailwind CSS Navbar component"
+                  src="https://daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
                 />
               )}
             </div>
@@ -51,16 +46,13 @@ const Profile = ({ user }) => {
               <a href="/update-profile">Profile</a>
             </li>
             <li>
-              <a href="/order">Order</a>
+              <a>Order</a>
             </li>
             <li>
-              <a>Settings</a>
+              <a>Setting</a>
             </li>
             <li>
-              <Link to="/dashboard">Dashboard</Link>
-            </li>
-            <li>
-              <button onClick={handleLogout}>Logout</button>
+              <a onClick={handleLogout}>Logout</a>
             </li>
           </ul>
         </div>
