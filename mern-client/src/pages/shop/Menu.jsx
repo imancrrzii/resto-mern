@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Card from "../../components/Card";
 import { FaFilter } from "react-icons/fa";
+import axios from "axios";
 const Menu = () => {
   const [menu, setMenu] = useState([]);
   const [filteredItem, setFilteredItem] = useState([]);
@@ -9,22 +10,19 @@ const Menu = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(6);
 
-  // loading data
   useEffect(() => {
-    // fetch data menu.json
-    const fetchData = async () => {
-      try {
-        const response = await fetch("http://localhost:5001/menu");
-        const data = await response.json();
-        setMenu(data);
-        setFilteredItem(data);
-      } catch (error) {
-        console.log("Err to fetching data", error);
-      }
-    };
-    // call the function
-    fetchData();
+    loadMenuData();
   }, []);
+
+  const loadMenuData = async () => {
+    try {
+      const response = await axios.get("http://localhost:5001/menu");
+      setMenu(response.data);
+      setFilteredItem(response.data);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   const filterItems = (category) => {
     const filtered =
