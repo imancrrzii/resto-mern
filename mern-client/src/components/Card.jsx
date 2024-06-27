@@ -12,7 +12,7 @@ const Card = ({ item }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleAddtoCart = (item) => {
+  const handleAddtoCart = item => {
     if (user ?? user?.email) {
       const cartItem = {
         menuItemId: _id,
@@ -23,7 +23,7 @@ const Card = ({ item }) => {
         quantity: 1,
         email: user.email,
       };
-      fetch("http://localhost:5000/carts", {
+      fetch("http://localhost:5001/carts", {
         method: "POST",
         headers: {
           "content-type": "application/json",
@@ -33,7 +33,7 @@ const Card = ({ item }) => {
         .then((res) => res.json())
         .then((data) => {
           // console.log(data);
-          if (data.insertedId) {
+          if (data._id) {
             Swal.fire({
               position: "center",
               icon: "success",

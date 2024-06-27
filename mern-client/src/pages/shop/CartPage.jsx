@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import useCart from "../../hooks/useCart";
 import { FaTrash } from "react-icons/fa";
 import Swal from "sweetalert2";
@@ -8,20 +8,28 @@ const CartPage = () => {
   const { user } = useContext(AuthContext);
   const [cart, refetch] = useCart();
   const [cartItems, setCartItems] = useState([]);
+
+  useEffect(() => {
+    if (cart) {
+      setCartItems(cart);
+    }
+  }, [cart]);
+
   // calculate price
   const calculatePrice = (item) => {
     return item.price * item.quantity;
   };
 
   // calculateTotalPrice
-  const cartSubTotal = cart.reduce((total, item) => {
+  const cartSubTotal = (cart || []).reduce((total, item) => {
     return total + calculatePrice(item);
   }, 0);
 
   const orderTotal = cartSubTotal;
+
   // handle increase quantity
   const handleIncrease = (item) => {
-    fetch(`http://localhost:5000/carts/${item._id}`, {
+    fetch(`http://localhost:5001/carts/${item._id}`, {
       method: "PUT",
       headers: {
         "content-type": "application/json; charset=UTF-8",
@@ -44,9 +52,10 @@ const CartPage = () => {
       });
     refetch();
   };
+
   const handleDecrease = (item) => {
     if (item.quantity > 1) {
-      fetch(`http://localhost:5000/carts/${item._id}`, {
+      fetch(`http://localhost:5001/carts/${item._id}`, {
         method: "PUT",
         headers: {
           "content-type": "application/json; charset=UTF-8",
@@ -76,6 +85,7 @@ const CartPage = () => {
       });
     }
   };
+
   const handleDelete = (item) => {
     Swal.fire({
       title: "Are you sure?",
@@ -87,7 +97,7 @@ const CartPage = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:5000/carts/${item._id}`, {
+        fetch(`http://localhost:5001/carts/${item._id}`, {
           method: "DELETE",
         })
           .then((res) => res.json())
@@ -137,7 +147,7 @@ const CartPage = () => {
               </thead>
               <tbody>
                 {/* row 1 */}
-                {cart?.map((item, index) => (
+                {(cart || []).map((item, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
                     <td>
@@ -199,7 +209,7 @@ const CartPage = () => {
           </div>
           <div className="md:w-1/2 space-y-3">
             <h3 className="font-medium">Shopping Details</h3>
-            <p>Total Items: {cart?.length}</p>
+            <p>Total Items: {(cart || []).length}</p>
             <p>Total Price: ${orderTotal.toFixed(2)}</p>
             <button className="btn bg-violet-600 text-white">
               Proceed Checkout
