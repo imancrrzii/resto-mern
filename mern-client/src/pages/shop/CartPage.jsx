@@ -1,45 +1,34 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import useCart from "../../hooks/useCart";
-import { FaTrash } from "react-icons/fa";
-import Swal from "sweetalert2";
 import { AuthContext } from "../../contexts/AuthProvider";
+import Swal from "sweetalert2";
+import { FaTrash } from "react-icons/fa";
+import axios from "axios";
 
 const CartPage = () => {
   const { user } = useContext(AuthContext);
   const [cart, refetch] = useCart();
+  console.log(cart)
   const [cartItems, setCartItems] = useState([]);
 
-  useEffect(() => {
-    if (cart) {
-      setCartItems(cart);
-    }
-  }, [cart]);
-
-  // calculate price
-  const calculatePrice = (item) => {
+  // Calculate the total price for each item in the cart
+  const calculateTotalPrice = (item) => {
     return item.price * item.quantity;
   };
+  // Handle quantity increase
+  const handleIncrease = async (item) => {
+    try {
+      const response = await fetch(`http://localhost:5001/carts/${item._id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ quantity: item.quantity + 1 }),
+      });
 
-  // calculateTotalPrice
-  const cartSubTotal = (cart || []).reduce((total, item) => {
-    return total + calculatePrice(item);
-  }, 0);
-
-  const orderTotal = cartSubTotal;
-
-  // handle increase quantity
-  const handleIncrease = (item) => {
-    fetch(`http://localhost:5001/carts/${item._id}`, {
-      method: "PUT",
-      headers: {
-        "content-type": "application/json; charset=UTF-8",
-      },
-      body: JSON.stringify({ quantity: item.quantity + 1 }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        const updateCart = cartItems.map((cartItem) => {
-          if (cartItem._id === data._id) {
+      if (response.ok) {
+        const updatedCart = cartItems.map((cartItem) => {
+          if (cartItem.id === item.id) {
             return {
               ...cartItem,
               quantity: cartItem.quantity + 1,
@@ -47,25 +36,32 @@ const CartPage = () => {
           }
           return cartItem;
         });
-        refetch();
-        setCartItems(updateCart);
-      });
-    refetch();
+        await refetch();
+        setCartItems(updatedCart);
+      } else {
+        console.error("Failed to update quantity");
+      }
+    } catch (error) {
+      console.error("Error updating quantity:", error);
+    }
   };
-
-  const handleDecrease = (item) => {
+  // Handle quantity decrease
+  const handleDecrease = async (item) => {
     if (item.quantity > 1) {
-      fetch(`http://localhost:5001/carts/${item._id}`, {
-        method: "PUT",
-        headers: {
-          "content-type": "application/json; charset=UTF-8",
-        },
-        body: JSON.stringify({ quantity: item.quantity - 1 }),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          const updateCart = cartItems.map((cartItem) => {
-            if (cartItem._id === data._id) {
+      try {
+        const response = await fetch(
+          `http://localhost:5001/carts/${item._id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ quantity: item.quantity - 1 }),
+          }
+        );
+        if (response.ok) {
+          const updatedCart = cartItems.map((cartItem) => {
+            if (cartItem.id === item.id) {
               return {
                 ...cartItem,
                 quantity: cartItem.quantity - 1,
@@ -73,19 +69,26 @@ const CartPage = () => {
             }
             return cartItem;
           });
-          refetch();
-          setCartItems(updateCart);
-        });
-      refetch();
-    } else {
-      Swal.fire({
-        icon: "error",
-        title: "Oops...",
-        text: "You can't decrease quantity less than 1",
-      });
+          await refetch();
+          setCartItems(updatedCart);
+        } else {
+          console.error("Failed to update quantity");
+        }
+      } catch (error) {
+        console.error("Error updating quantity:", error);
+      }
     }
   };
 
+  // Calculate the cart subtotal
+  const cartSubtotal = cart.reduce((total, item) => {
+    return total + calculateTotalPrice(item);
+  }, 0);
+
+  // Calculate the order total
+  const orderTotal = cartSubtotal;
+
+  // delete item
   const handleDelete = (item) => {
     Swal.fire({
       title: "Are you sure?",
@@ -97,20 +100,15 @@ const CartPage = () => {
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
       if (result.isConfirmed) {
-        fetch(`http://localhost:5001/carts/${item._id}`, {
-          method: "DELETE",
+        axios.delete(`http://localhost:5001/carts/${item._id}`).then(response => {
+          if (response) {
+            refetch();
+             Swal.fire("Deleted!", "Your item has been deleted.", "success");
+           }
         })
-          .then((res) => res.json())
-          .then((data) => {
-            if (data.deletedCount > 0) {
-              refetch();
-              Swal.fire({
-                title: "Deleted!",
-                text: "Your file has been deleted.",
-                icon: "success",
-              });
-            }
-          });
+        .catch(error => {
+          console.error(error);
+        });
       }
     });
   };
@@ -183,7 +181,7 @@ const CartPage = () => {
                         +
                       </button>
                     </td>
-                    <td>${calculatePrice(item).toFixed(2)}</td>
+                    <td>${calculateTotalPrice(item).toFixed(2)}</td>
                     <td>
                       <button
                         onClick={() => handleDelete(item)}
