@@ -1,68 +1,72 @@
 import React, { useContext, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaHeart } from "react-icons/fa";
-import "../App.css";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthProvider";
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2'
+import useCart from "../hooks/useCart";
+import axios from 'axios';
 
 const Card = ({ item }) => {
   const { name, image, price, recipe, _id } = item;
-  const [isHeartFilled, setIsHeartFilled] = useState(false);
-  const { user } = useContext(AuthContext);
+
+  const {user} = useContext(AuthContext);
+  const [cart, refetch] = useCart();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const handleAddtoCart = item => {
-    if (user ?? user?.email) {
-      const cartItem = {
-        menuItemId: _id,
-        name,
-        image,
-        price,
-        recipe,
-        quantity: 1,
-        email: user.email,
-      };
-      fetch("http://localhost:5001/carts", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify(cartItem),
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          // console.log(data);
-          if (data._id) {
-            Swal.fire({
-              position: "center",
-              icon: "success",
-              title: "Item added to cart",
-              showConfirmButton: false,
-              timer: 1500,
-            });
-            refetch(); // Memanggil refetch untuk memperbarui cart
-          }
-        });
-    } else {
-      Swal.fire({
-        title: "Please log in to add items to your cart",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Log in",
-      }).then((result) => {
-        if (result.isConfirmed) {
-          navigate("/register", { state: { from: location } });
-        }
-      });
-    }
-  };
+  // console.log(item)
+  const [isHeartFilled, setIsHeartFilled] = useState(false);
 
   const handleHeartClick = () => {
     setIsHeartFilled(!isHeartFilled);
   };
+
+  // add to cart
+  const handleAddToCart = item => {
+    console.log(item);
+    if(user && user.email){
+        const cartItem = {menuItemId: _id, name, quantity : 1, image, price, email: user.email}
+
+        axios.post('http://localhost:5001/carts', cartItem)
+        .then((response) => {
+          console.log(response);
+          if(response){
+            refetch(); // refetch cart
+              Swal.fire({
+                  position: 'center',
+                  icon: 'success',
+                  title: 'Food added on the cart.',
+                  showConfirmButton: false,
+                  timer: 1500
+                })
+          }
+        })
+        .catch( (error) => {
+          console.log(error.response.data.message);
+          const errorMessage = error.response.data.message;
+          Swal.fire({
+            position: 'center',
+            icon: 'warning',
+            title: `${errorMessage}`,
+            showConfirmButton: false,
+            timer: 1500
+          })
+        });
+    }
+    else{
+        Swal.fire({
+            title: 'Please login to order the food',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Login now!'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              navigate('/login', {state: {from: location}})
+            }
+          })
+    }
+}
   return (
     <div className="card w-96 bg-base-100 shadow-xl relative">
       <div
@@ -94,7 +98,7 @@ const Card = ({ item }) => {
           </h5>
           <button
             className="btn bg-violet-600 text-white"
-            onClick={() => handleAddtoCart(item)}
+            onClick={() => handleAddToCart(item)}
           >
             Add to cart
           </button>
