@@ -1,18 +1,23 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const {Schema} = mongoose;
 
-// create schema 
+// create schema object for Menu Items
 const menuSchema = new Schema({
     name: {
         type: String,
-        required: true, 
         trim: true,
-        minlength: 3,
+        required: true,
+        minlength: 3
     },
     recipe: String,
-    image: String,
+    image: String, 
     category: String,
-    price: Number
+    price: Number,
+    createdAt: {
+        type: Date,
+        default: Date.now
+    }
+
 })
 
 // create model

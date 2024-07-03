@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
-import Card from "../../components/Card";
+import Cards from "../../components/Cards";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 
 const simpleNextArrow = (props) => {
@@ -24,7 +24,7 @@ const simplePrevArrow = (props) => {
   return (
     <div
       className={className}
-      style={{ ...style, display: "block", background: "green" }}
+      style={{ ...style, display: "block", background: "violet-600" }}
       onClick={onClick}
     >
       Prev
@@ -87,7 +87,7 @@ const SpecialDish = () => {
     <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4 my-20 relative">
       <div>
         <div className="text-left">
-          <p className="text-red uppercase tracking-wide font-semibold text-lg">
+          <p className="subtitle">
             Special Dishes
           </p>
           <h2 className="font-bold text-4xl md:text-5xl my-2 md:leading-snug leading-snug md:w-[520px]">
@@ -112,7 +112,7 @@ const SpecialDish = () => {
 
         <Slider ref={slider} {...settings} className="overflow-hidden mt-10 space-x-5">
           {recipes.map((item, i) => (
-            <Card key={i} item={item} />
+            <Cards key={i} item={item} />
           ))}
         </Slider>
       </div>

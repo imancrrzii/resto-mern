@@ -1,27 +1,35 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
-import {
-  FaEdit,
-  FaTrash,
-  FaUser,
-  FaUserCheck,
-  FaUserLock,
-  FaUsers,
-} from "react-icons/fa";
-import { MdModeEdit } from "react-icons/md";
+import { FaTrashAlt, FaUser, FaUserLock, FaUsers } from "react-icons/fa";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const Users = () => {
+  const axiosSecure = useAxiosSecure();
   const { refetch, data: users = [] } = useQuery({
     queryKey: ["users"],
     queryFn: async () => {
-      const res = await fetch(`http://localhost:5001/users`);
-      return res.json();
+      const res = await axiosSecure.get("/users");
+      return res.data;
     },
   });
+  // console.log(users);
+  const handleMakeAdmin = (user) => {
+    axiosSecure.patch(`/users/admin/${user._id}`).then((res) => {
+      alert(`${user.name} is now admin`);
+      refetch();
+    });
+  };
+
+  const handleDeleteUser = (user) => {
+    axiosSecure.delete(`/users/${user._id}`).then((res) => {
+      alert(`${user.name} is removed from database`);
+      refetch();
+    });
+  };
   return (
     <div>
-      <div className="flex items-center justify-between mx-4">
-        <h5>Users</h5>
+      <div className="flex items-center justify-between m-4">
+        <h5>All Users</h5>
         <h5>Total Users: {users.length}</h5>
       </div>
 
@@ -30,9 +38,9 @@ const Users = () => {
         <div className="overflow-x-auto">
           <table className="table table-zebra md:w-[870px]">
             {/* head */}
-            <thead className="bg-violet-300 text-black rounded-xl">
+            <thead className="bg-violet-600 text-white rounded-lg">
               <tr className="text-center">
-                <th>No</th>
+                <th>#</th>
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
@@ -57,11 +65,11 @@ const Users = () => {
                     )}
                   </td>
                   <td>
-                    <button className="btn btn-ghost text-yellow-400 btn-sm">
-                      <FaEdit />
-                    </button>
-                    <button className="btn btn-ghost text-rose-600 btn-sm">
-                      <FaTrash />
+                    <button
+                      onClick={() => handleDeleteUser(user)}
+                      className="btn btn-xs bg-orange-500 text-white"
+                    >
+                      <FaTrashAlt />
                     </button>
                   </td>
                 </tr>

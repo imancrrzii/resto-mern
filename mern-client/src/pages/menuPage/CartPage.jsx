@@ -1,8 +1,9 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import useCart from "../../hooks/useCart";
 import { AuthContext } from "../../contexts/AuthProvider";
 import Swal from "sweetalert2";
 import { FaTrash } from "react-icons/fa";
+import {Link} from 'react-router-dom'
 import axios from "axios";
 
 const CartPage = () => {
@@ -59,6 +60,7 @@ const CartPage = () => {
             body: JSON.stringify({ quantity: item.quantity - 1 }),
           }
         );
+
         if (response.ok) {
           const updatedCart = cartItems.map((cartItem) => {
             if (cartItem.id === item.id) {
@@ -87,9 +89,10 @@ const CartPage = () => {
 
   // Calculate the order total
   const orderTotal = cartSubtotal;
+  // console.log(orderTotal)
 
-  // delete item
-  const handleDelete = (item) => {
+  // delete an item
+  const handleDelete =   (item) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -103,7 +106,7 @@ const CartPage = () => {
         axios.delete(`http://localhost:5001/carts/${item._id}`).then(response => {
           if (response) {
             refetch();
-             Swal.fire("Deleted!", "Your item has been deleted.", "success");
+             Swal.fire("Deleted!", "Your file has been deleted.", "success");
            }
         })
         .catch(error => {
@@ -115,67 +118,65 @@ const CartPage = () => {
 
   return (
     <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4">
-      <div className="bg-white">
-        {/* banner */}
-        <div className="py-36 flex flex-col justify-center items-center gap-8 ">
-          {/* text */}
-          <div className="text-center space-y-7 px-4">
-            <h5 className="text-4xl font-bold md:text-3xl md:leading-snug leading-snug">
-              Lorem ipsum dolor sit amet
-              <span className="text-violet-600"> Food</span>
-            </h5>
+      {/* banner */}
+      <div className=" bg-gradient-to-r from-0% from-[#FAFAFA] to-[#FCFCFC] to-100%">
+        <div className="py-28 flex flex-col items-center justify-center">
+          {/* content */}
+          <div className=" text-center px-4 space-y-7">
+            <h2 className="md:text-5xl text-4xl font-bold md:leading-snug leading-snug">
+              Items Added to The<span className="text-violet-600"> Cart</span>
+            </h2>
           </div>
         </div>
+      </div>
 
-        {/* table */}
-        <div>
+      {/* cart table */}
+      {
+        (cart.length > 0) ? <div>
+        <div className="">
           <div className="overflow-x-auto">
             <table className="table">
               {/* head */}
-              <thead className="bg-violet-300 text-black rounded-md">
+              <thead className="bg-violet-600 text-white rounded-sm">
                 <tr>
-                  <th>No</th>
+                  <th>#</th>
                   <th>Food</th>
-                  <th>Name</th>
+                  <th>Item Name</th>
                   <th>Quantity</th>
                   <th>Price</th>
                   <th>Action</th>
-                  <th></th>
                 </tr>
               </thead>
               <tbody>
-                {/* row 1 */}
-                {(cart || []).map((item, index) => (
+                {cart.map((item, index) => (
                   <tr key={index}>
                     <td>{index + 1}</td>
                     <td>
-                      <div className="flex items-center space-x-3">
-                        <div className="avatar">
-                          <div className="mask mask-squircle w-12 h-12">
-                            <img
-                              src={item.image}
-                              alt="Avatar Tailwind CSS Component"
-                            />
-                          </div>
+                      <div className="avatar">
+                        <div className="mask mask-squircle w-12 h-12">
+                          <img
+                            src={item.image}
+                            alt="Avatar Tailwind CSS Component"
+                          />
                         </div>
                       </div>
                     </td>
                     <td className="font-medium">{item.name}</td>
                     <td>
                       <button
-                        className="btn btn-xs bg-violet-300"
+                        className="btn btn-xs"
                         onClick={() => handleDecrease(item)}
                       >
                         -
                       </button>
                       <input
                         type="number"
-                        onChange={() => console.log(item.quantity)}
                         value={item.quantity}
+                        onChange={() => console.log(item.quantity)}
                         className="w-10 mx-2 text-center overflow-hidden appearance-none"
                       />
                       <button
-                        className="btn btn-xs bg-violet-300"
+                        className="btn btn-xs"
                         onClick={() => handleIncrease(item)}
                       >
                         +
@@ -184,8 +185,8 @@ const CartPage = () => {
                     <td>${calculateTotalPrice(item).toFixed(2)}</td>
                     <td>
                       <button
+                        className="btn btn-sm border-none text-red bg-transparent"
                         onClick={() => handleDelete(item)}
-                        className="btn btn-ghost text-rose-600 btn-sm"
                       >
                         <FaTrash />
                       </button>
@@ -193,28 +194,38 @@ const CartPage = () => {
                   </tr>
                 ))}
               </tbody>
+              {/* foot */}
             </table>
           </div>
         </div>
-
-        {/* customer details */}
-        <div className="my-12 flex flex-col md:flex-row justify-between items-start">
+        <hr />
+        <div className="flex flex-col md:flex-row justify-between items-start my-12 gap-8">
           <div className="md:w-1/2 space-y-3">
-            <h3 className="font-medium">Customer Details</h3>
-            <p>Name: {user?.displayName}</p>
+            <h3 className="text-lg font-semibold">Customer Details</h3>
+            <p>Name: {user?.displayName || "None"}</p>
             <p>Email: {user?.email}</p>
-            <p>User ID: {user?.uid}</p>
+            <p>
+              User_id: <span className="text-sm">{user?.uid}</span>
+            </p>
           </div>
           <div className="md:w-1/2 space-y-3">
-            <h3 className="font-medium">Shopping Details</h3>
-            <p>Total Items: {(cart || []).length}</p>
-            <p>Total Price: ${orderTotal.toFixed(2)}</p>
-            <button className="btn bg-violet-600 text-white">
-              Proceed Checkout
+            <h3 className="text-lg font-semibold">Shopping Details</h3>
+            <p>Total Items: {cart.length}</p>
+            <p>
+              Total Price:{" "}
+              <span id="total-price">${orderTotal.toFixed(2)}</span>
+            </p>
+            <button className="btn btn-md bg-violet-600 text-white px-8 py-1">
+              Procceed to Checkout
             </button>
           </div>
         </div>
+      </div> : <div className="text-center mt-20">
+        <p>Cart is empty. Please add products.</p>
+        <Link to="/menu"><button className="btn bg-violet-600 text-white mt-3">Back to Menu</button></Link>
       </div>
+      }
+      
     </div>
   );
 };

@@ -1,15 +1,16 @@
 import React from "react";
 import { FaStar } from "react-icons/fa";
+import Img from "/hero/hero.png"
 
 const Testimonial = () => {
   return (
     <div className="max-w-screen-2xl container mx-auto xl:px-24 px-4 my-16">
       <div className="flex flex-col md:flex-row items-center justify-between gap-12">
         <div className="md:w-1/2">
-          <img src="/images/mobile-design.png" alt="" />
+          <img src={Img} alt="" />
         </div>
         <div className="md:w-4/5">
-          <p className="text-red uppercase tracking-wide font-semibold text-lg">
+          <p className="subtitle">
             Testimonials
           </p>
           <h2 className="font-bold text-4xl md:text-5xl my-2 md:leading-snug leading-snug">
