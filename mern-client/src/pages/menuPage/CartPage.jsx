@@ -135,12 +135,12 @@ const CartPage = () => {
 
       {/* cart table */}
       <div className="flex justify-end mb-3">
-<Link to={"checkout"}>
-<button className="btn btn-md bg-violet-600 text-white px-8 py-2 ">
-          <MdShoppingCartCheckout className="text-xl" />
-          Checkout Now
-        </button>
-</Link>
+        <Link to={"checkout"}>
+          <button className="btn btn-md bg-violet-600 text-white px-8 py-2 ">
+            <MdShoppingCartCheckout className="text-xl" />
+            Checkout Now
+          </button>
+        </Link>
       </div>
       {cart.length > 0 ? (
         <div>
